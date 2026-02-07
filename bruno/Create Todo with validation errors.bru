@@ -1,0 +1,19 @@
+meta {
+  name: Create Todo with validation errors
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host}}/api/todos
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "title": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras iaculis et sapien nec lacinia. Cras convallis consequat suscipit. Aenean volutpat sapien libero, quis placerat magna porttitor at. Fusce suscipit libero in ex suscipit facilisis. Nam gravida eros at justo cursus, eu elementum ipsum facilisis. Fusce molestie quam mauris, vel gravida augue euismod vel. Integer vitae libero non lorem bibendum condimentum ut et velit. Aliquam tempor lacus sit amet fringilla ultrices. Quisque ac leo elementum, ullamcorper nisi id, egestas odio. Pellentesque semper felis ut dolor venenatis, eget laoreet felis venenatis. Ut et magna ac nibh lobortis sodales lacinia vel ipsum. Vivamus finibus ipsum vel malesuada faucibus. Integer id mattis nulla.",
+    "notes": "Notes about my todo item",
+    "dueDate": "2026-04-21"
+  }
+}

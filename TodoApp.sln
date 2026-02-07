@@ -1,0 +1,76 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35828.75
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TodoApp.Api", "src\TodoApp.Api\TodoApp.Api.csproj", "{A4039B37-027D-4D33-8F42-5775A74A320E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TodoApp.Domain", "src\TodoApp.Domain\TodoApp.Domain.csproj", "{8B29012E-BC6F-461B-A9AF-00DF5BFBF028}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TodoApp.Application", "src\TodoApp.Application\TodoApp.Application.csproj", "{1BE0B076-0F11-4DF1-80BF-AD184596BB1D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TodoApp.Infrastructure", "src\TodoApp.Infrastructure\TodoApp.Infrastructure.csproj", "{7EF50B20-15C2-42D5-A907-5940EA011AA4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{143519FA-DF73-4A49-B15C-DF09A771928F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "bruno", "bruno", "{D79209F0-CD63-4419-ABF5-95F812FDAB6B}"
+	ProjectSection(SolutionItems) = preProject
+		bruno\Complete Todo.bru = bruno\Complete Todo.bru
+		bruno\Create Todo with validation errors.bru = bruno\Create Todo with validation errors.bru
+		bruno\Create Todo.bru = bruno\Create Todo.bru
+		bruno\Delete Todo.bru = bruno\Delete Todo.bru
+		bruno\Get Todo by id.bru = bruno\Get Todo by id.bru
+		bruno\List Todos.bru = bruno\List Todos.bru
+		bruno\Reopen Todo.bru = bruno\Reopen Todo.bru
+		bruno\Update Todo.bru = bruno\Update Todo.bru
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "environments", "environments", "{8E831CF5-AA3F-4E43-8E5A-1D3D6A3069EA}"
+	ProjectSection(SolutionItems) = preProject
+		bruno\environments\development.bru = bruno\environments\development.bru
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A4039B37-027D-4D33-8F42-5775A74A320E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4039B37-027D-4D33-8F42-5775A74A320E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4039B37-027D-4D33-8F42-5775A74A320E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4039B37-027D-4D33-8F42-5775A74A320E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B29012E-BC6F-461B-A9AF-00DF5BFBF028}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B29012E-BC6F-461B-A9AF-00DF5BFBF028}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B29012E-BC6F-461B-A9AF-00DF5BFBF028}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B29012E-BC6F-461B-A9AF-00DF5BFBF028}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1BE0B076-0F11-4DF1-80BF-AD184596BB1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BE0B076-0F11-4DF1-80BF-AD184596BB1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BE0B076-0F11-4DF1-80BF-AD184596BB1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BE0B076-0F11-4DF1-80BF-AD184596BB1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7EF50B20-15C2-42D5-A907-5940EA011AA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7EF50B20-15C2-42D5-A907-5940EA011AA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7EF50B20-15C2-42D5-A907-5940EA011AA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7EF50B20-15C2-42D5-A907-5940EA011AA4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A4039B37-027D-4D33-8F42-5775A74A320E} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{8B29012E-BC6F-461B-A9AF-00DF5BFBF028} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{1BE0B076-0F11-4DF1-80BF-AD184596BB1D} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{7EF50B20-15C2-42D5-A907-5940EA011AA4} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{8E831CF5-AA3F-4E43-8E5A-1D3D6A3069EA} = {D79209F0-CD63-4419-ABF5-95F812FDAB6B}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {09437552-02A9-442A-9F4B-DC4E248EBA00}
+	EndGlobalSection
+EndGlobal

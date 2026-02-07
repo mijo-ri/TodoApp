@@ -1,0 +1,19 @@
+meta {
+  name: Complete Todo
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{host}}/api/todos/{{id}}/complete
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+    "title": "My todo updated",
+    "notes": "Notes about my todo item has been updated",
+    "dueDate": "2026-05-21"
+  }
+}

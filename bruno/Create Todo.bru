@@ -1,0 +1,19 @@
+meta {
+  name: Create Todo
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{host}}/api/todos
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "title": "My todo",
+    "notes": "Notes about my todo item",
+    "dueDate": "2026-04-21"
+  }
+}
