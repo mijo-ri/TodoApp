@@ -1,10 +1,10 @@
 ﻿namespace TodoApp.Domain.Todos;
 
-public sealed class TodoItem
+public sealed record TodoItem
 {
     public Guid Id { get; private set; } = Guid.NewGuid();
 
-    public string Title { get; private set; } = default!;
+    public TodoTitle Title { get; private set; } = default!;
     public string? Notes { get; private set; }
     public DateOnly? DueDate { get; private set; }
 
@@ -51,13 +51,7 @@ public sealed class TodoItem
 
     private void SetTitle(string title)
     {
-        if (string.IsNullOrWhiteSpace(title))
-            throw new DomainException("Title must not be empty.");
-
-        if (title.Trim().Length > 200)
-            throw new DomainException("Title must not exceed 200 characters.");
-
-        Title = title.Trim();
+        Title = TodoTitle.Create(title);
     }
 
     private void SetNotes(string? notes)

@@ -72,6 +72,42 @@ Examples:
 
 ---
 
+## Entity Framework Core Configuration
+
+The Infrastructure layer contains explicit EF Core configurations using
+`IEntityTypeConfiguration<T>` to keep persistence concerns out of the
+domain model.
+
+### TodoItemConfiguration
+
+The `TodoItem` aggregate is configured via:
+
+```
+src/TodoApp.Infrastructure/Persistence/Configurations/TodoItemConfiguration.cs
+```
+
+Key aspects:
+
+- Mapping of the `TodoItem` aggregate root
+- Mapping of the `TodoTitle` value object using a **ValueConverter**
+- Domain validation remains fully inside the domain model
+- The database stores `TodoTitle` as a simple string column
+
+This approach ensures:
+
+- No EF Core attributes in the domain layer
+- Full encapsulation of domain invariants
+- Clean separation between domain and persistence concerns
+
+All configurations are registered automatically in the `DbContext`
+using:
+
+``` csharp
+modelBuilder.ApplyConfigurationsFromAssembly(typeof(TodoDbContext).Assembly);
+```
+
+---
+
 ## Error Handling
 
 The project uses **ErrorOr** for business errors and **exceptions only for unexpected or technical failures**.
@@ -238,13 +274,9 @@ dotnet tool install --global dotnet-ef
 Run the following commands from the project root:
 
 ```bash
-dotnet ef migrations add InitialCreate \
-  --project src/TodoApp.Infrastructure \
-  --startup-project src/TodoApp.Api
+dotnet ef migrations add InitialCreate --project src/TodoApp.Infrastructure --startup-project src/TodoApp.Api
 
-dotnet ef database update \
-  --project src/TodoApp.Infrastructure \
-  --startup-project src/TodoApp.Api
+dotnet ef database update --project src/TodoApp.Infrastructure --startup-project src/TodoApp.Api
 ```
 
 - The `DbContext` is located in **TodoApp.Infrastructure**

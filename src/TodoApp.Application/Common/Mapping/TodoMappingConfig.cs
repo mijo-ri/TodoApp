@@ -10,7 +10,7 @@ public sealed class TodoMappingConfig : IRegister
     {
         config.NewConfig<TodoItem, TodoDto>()
             .Map(dest => dest.Id, src => src.Id)
-            .Map(dest => dest.Title, src => src.Title)
+            .Map(dest => dest.Title, src => src.Title.Value)
             .Map(dest => dest.Notes, src => src.Notes)
             .Map(dest => dest.DueDate, src => src.DueDate)
             .Map(dest => dest.IsCompleted, src => src.IsCompleted)
