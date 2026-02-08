@@ -134,7 +134,10 @@ public class UpdateTodoCommandHandlerTests
 
         // Assert
         result.IsError.Should().BeTrue();
-        result.Errors.Should().ContainSingle(e => e.Type == ErrorType.Validation || e == TodoErrors.Domain(It.IsAny<string>()));
+        result.Errors.Should().ContainSingle(e =>
+            e.Type == ErrorType.Validation
+            || e == TodoErrors.Domain(It.IsAny<string>())
+        );
         _todoRepositoryMock.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
         _mapperMock.Verify(m => m.Map<TodoDto>(It.IsAny<TodoItem>()), Times.Never);
     }
