@@ -2,7 +2,7 @@
 using TodoApp.Application.Abstractions.Persistence;
 using TodoApp.Domain.Todos;
 
-namespace TodoApp.Infrastructure.Persistence;
+namespace TodoApp.Infrastructure.Persistence.Repositories;
 
 public sealed class EfTodoRepository : ITodoRepository
 {

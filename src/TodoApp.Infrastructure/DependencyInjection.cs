@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using TodoApp.Application.Abstractions.Persistence;
 using TodoApp.Application.Abstractions.Time;
 using TodoApp.Infrastructure.Persistence;
+using TodoApp.Infrastructure.Persistence.Repositories;
 using TodoApp.Infrastructure.Time;
 
 namespace TodoApp.Infrastructure;
