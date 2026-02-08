@@ -410,8 +410,9 @@ This makes tests more explicit and safer during refactoring.
 🚧 In development
 
 Next steps:
-- Base classes for AggregateRoot, Entity and ValueObject
-- Create new directory Repositories in Persinstence and move files
-- Domain & Application tests
-- Use Postgres instead of SQLite
-- Deployment to Azure
+- Polish logging and `ProblemDetails` handling, including explicit Swagger response types
+- Introduce paging and filtering for list endpoints, including efficient EF Core projections
+- Switch to PostgreSQL (local development via Docker Compose)
+- Define deployment to Azure, including a clear migrations strategy
+- Add health checks and basic monitoring
+- Address concurrency concerns and add integration tests using Testcontainers
