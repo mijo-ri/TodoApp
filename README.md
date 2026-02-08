@@ -302,41 +302,94 @@ Example endpoints:
 
 ## Unit Tests
 
-Automated tests are kept outside the `src/` directory and are structured according to **Clean Architecture**.
+Automated tests are kept outside the `src/` directory and are structured according to **Clean Architecture** principles.
 
 ### Test Structure
 
 ```
 tests/
  ├─ TodoApp.Domain.Tests        // Unit tests for the domain model
- └─ TodoApp.Application.Tests   // Unit tests for application use cases
+ └─ TodoApp.Application.Tests   // Unit tests for application use cases (commands & queries)
 ```
 
-### Domain Tests
+---
 
-Domain tests verify **only domain logic**:
+## Domain Tests
+
+Domain tests verify **pure domain logic only**:
+
 - Value Objects (e.g. `TodoTitle`)
 - Entities and invariants
+- Domain behavior and state changes
 - Domain exceptions
 
-They have:
-- No mocks
-- No dependencies on Application or Infrastructure
-- No ASP.NET Core or EF Core references
+Characteristics:
 
-This keeps domain rules isolated, fast, and framework-independent.
+- ❌ No mocks
+- ❌ No dependencies on Application or Infrastructure
+- ❌ No ASP.NET Core or EF Core references
+- ✅ Only domain objects under test
 
-### Test Libraries
+This keeps domain rules **isolated**, **fast**, and **framework-independent**.
 
-**xUnit v3**
+---
+
+## Application Layer Tests
+
+Application tests verify **use case orchestration**, not infrastructure.
+
+They ensure that a command or query:
+
+- Creates or loads domain objects correctly
+- Calls the expected repositories
+- Persists changes
+- Maps domain objects to DTOs
+- Returns the correct result or error
+
+### Key Principles
+
+- Dependencies (repositories, mappers, services) are **mocked**
+- Domain logic itself is **not mocked**
+- Tests focus on **behavior and interactions**
+- Each test represents one application use case
+
+### Mocking Strategy
+
+**Moq** is used to mock Application Layer dependencies:
+
+- Repositories (e.g. `ITodoRepository`)
+- Mappers (e.g. `IMapper`)
+- External services (if any)
+
+Mocks are configured using **`MockBehavior.Strict`**:
+
+- Every interaction must be explicitly defined
+- Unexpected calls cause the test to fail
+- This protects against accidental changes in orchestration logic
+
+This makes tests more explicit and safer during refactoring.
+
+---
+
+## Test Libraries
+
+### xUnit v3
+
 - Modern .NET test framework
 - Successor to xUnit v2 (deprecated)
 - Integrated with `dotnet test`
 
-**FluentAssertions**
+### FluentAssertions
+
 - Improves readability and expressiveness of assertions
-- Produces clear failure messages
-- Well suited for DDD-style domain tests
+- Produces clear, human-readable failure messages
+- Well suited for DDD-style tests
+
+### Moq
+
+- Mocking framework for .NET
+- Used to isolate the Application Layer
+- Enables verification of interactions with dependencies
 
 ---
 
