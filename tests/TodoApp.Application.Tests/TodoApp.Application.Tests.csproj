@@ -22,4 +22,12 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Todos\Delete\" />
+    <Folder Include="Todos\GetById\" />
+    <Folder Include="Todos\List\" />
+    <Folder Include="Todos\Update\" />
+    <Folder Include="Todos\Reopen\" />
+  </ItemGroup>
+
 </Project>
