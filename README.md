@@ -300,6 +300,46 @@ Example endpoints:
 
 ---
 
+## Unit Tests
+
+Automated tests are kept outside the `src/` directory and are structured according to **Clean Architecture**.
+
+### Test Structure
+
+```
+tests/
+ ├─ TodoApp.Domain.Tests        // Unit tests for the domain model
+ └─ TodoApp.Application.Tests   // Unit tests for application use cases
+```
+
+### Domain Tests
+
+Domain tests verify **only domain logic**:
+- Value Objects (e.g. `TodoTitle`)
+- Entities and invariants
+- Domain exceptions
+
+They have:
+- No mocks
+- No dependencies on Application or Infrastructure
+- No ASP.NET Core or EF Core references
+
+This keeps domain rules isolated, fast, and framework-independent.
+
+### Test Libraries
+
+**xUnit v3**
+- Modern .NET test framework
+- Successor to xUnit v2 (deprecated)
+- Integrated with `dotnet test`
+
+**FluentAssertions**
+- Improves readability and expressiveness of assertions
+- Produces clear failure messages
+- Well suited for DDD-style domain tests
+
+---
+
 ## Design Decisions (Summary)
 
 - **Clean Architecture** for clear separation of concerns
@@ -317,4 +357,8 @@ Example endpoints:
 🚧 In development
 
 Next steps:
+- Base classes for AggregateRoot, Entity and ValueObject
+- Create new directory Repositories in Persinstence and move files
 - Domain & Application tests
+- Use Postgres instead of SQLite
+- Deployment to Azure
