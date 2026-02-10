@@ -2,7 +2,7 @@
 
 Created by Michael John Rieser
 
-A personal Todo Web API built with **.NET 9**, following **Clean Architecture** and **Domain-Driven Design (DDD)** principles.
+A personal Todo Web API built with **.NET 10**, following **Clean Architecture** and **Domain-Driven Design (DDD)** principles.
 The project is intentionally simple, but serves as a clean reference implementation for architecture, error handling,
 and separation of concerns.
 
