@@ -1,6 +1,6 @@
 ﻿namespace TodoApp.Domain.Todos;
 
-public sealed record TodoItem
+public sealed class TodoItem
 {
     public Guid Id { get; private set; } = Guid.NewGuid();
 
