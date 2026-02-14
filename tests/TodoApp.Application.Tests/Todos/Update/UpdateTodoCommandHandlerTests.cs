@@ -3,6 +3,7 @@ using FluentAssertions;
 using MapsterMapper;
 using Moq;
 using TodoApp.Application.Abstractions.Persistence;
+using TodoApp.Application.Abstractions.Security;
 using TodoApp.Application.Common.Errors;
 using TodoApp.Application.Todos;
 using TodoApp.Application.Todos.Update;
@@ -14,16 +15,19 @@ public class UpdateTodoCommandHandlerTests
 {
     private readonly Mock<ITodoRepository> _todoRepositoryMock;
     private readonly Mock<IMapper> _mapperMock;
+    private readonly Mock<ICurrentUserService> _currentUserServiceMock;
     private readonly UpdateTodoCommandHandler _sut;
 
     public UpdateTodoCommandHandlerTests()
     {
         _todoRepositoryMock = new Mock<ITodoRepository>(MockBehavior.Strict);
         _mapperMock = new Mock<IMapper>(MockBehavior.Strict);
+        _currentUserServiceMock = new Mock<ICurrentUserService>(MockBehavior.Strict);
 
         _sut = new UpdateTodoCommandHandler(
             _todoRepositoryMock.Object,
-            _mapperMock.Object);
+            _mapperMock.Object,
+            _currentUserServiceMock.Object);
     }
 
     [Fact]
@@ -33,10 +37,15 @@ public class UpdateTodoCommandHandlerTests
         var todoId = Guid.NewGuid();
         var command = CreateValidCommand(todoId);
         var todoItem = CreateTodoItem(todoId);
+        var userId = Guid.NewGuid();
         var expectedDto = CreateDtoFrom(todoItem);
 
+        _currentUserServiceMock
+            .SetupGet(c => c.UserId)
+            .Returns(userId);
+
         _todoRepositoryMock
-            .Setup(r => r.GetByIdAsync(todoId, It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetByIdForOwnerAsync(todoId, userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(todoItem);
 
         _todoRepositoryMock
@@ -54,7 +63,8 @@ public class UpdateTodoCommandHandlerTests
         result.IsError.Should().BeFalse();
         result.Value.Should().Be(expectedDto);
 
-        _todoRepositoryMock.Verify(r => r.GetByIdAsync(todoId, It.IsAny<CancellationToken>()), Times.Once);
+        _currentUserServiceMock.VerifyGet(c => c.UserId, Times.Once);
+        _todoRepositoryMock.Verify(r => r.GetByIdForOwnerAsync(todoId, userId, It.IsAny<CancellationToken>()), Times.Once);
         _todoRepositoryMock.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         _mapperMock.Verify(m => m.Map<TodoDto>(todoItem), Times.Once);
     }
@@ -66,10 +76,15 @@ public class UpdateTodoCommandHandlerTests
         var todoId = Guid.NewGuid();
         var command = CreateValidCommand(todoId);
         var todoItem = CreateTodoItem(todoId);
+        var userId = Guid.NewGuid();
         var token = new CancellationTokenSource().Token;
 
+        _currentUserServiceMock
+            .SetupGet(c => c.UserId)
+            .Returns(userId);
+
         _todoRepositoryMock
-            .Setup(r => r.GetByIdAsync(todoId, token))
+            .Setup(r => r.GetByIdForOwnerAsync(todoId, userId, token))
             .ReturnsAsync(todoItem);
 
         _todoRepositoryMock
@@ -84,7 +99,8 @@ public class UpdateTodoCommandHandlerTests
         await _sut.Handle(command, token);
 
         // Assert
-        _todoRepositoryMock.Verify(r => r.GetByIdAsync(todoId, token), Times.Once);
+        _currentUserServiceMock.VerifyGet(c => c.UserId, Times.Once);
+        _todoRepositoryMock.Verify(r => r.GetByIdForOwnerAsync(todoId, userId, token), Times.Once);
         _todoRepositoryMock.Verify(r => r.SaveChangesAsync(token), Times.Once);
     }
 
@@ -94,9 +110,14 @@ public class UpdateTodoCommandHandlerTests
         // Arrange
         var todoId = Guid.NewGuid();
         var command = CreateValidCommand(todoId);
+        var userId = Guid.NewGuid();
+
+        _currentUserServiceMock
+            .SetupGet(c => c.UserId)
+            .Returns(userId);
 
         _todoRepositoryMock
-            .Setup(r => r.GetByIdAsync(todoId, It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetByIdForOwnerAsync(todoId, userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((TodoItem?)null);
 
         // Act
@@ -106,7 +127,8 @@ public class UpdateTodoCommandHandlerTests
         result.IsError.Should().BeTrue();
         result.Errors.Should().ContainSingle(e => e == TodoErrors.NotFound(todoId));
 
-        _todoRepositoryMock.Verify(r => r.GetByIdAsync(todoId, It.IsAny<CancellationToken>()), Times.Once);
+        _currentUserServiceMock.VerifyGet(c => c.UserId, Times.Once);
+        _todoRepositoryMock.Verify(r => r.GetByIdForOwnerAsync(todoId, userId, It.IsAny<CancellationToken>()), Times.Once);
         _todoRepositoryMock.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
         _mapperMock.Verify(m => m.Map<TodoDto>(It.IsAny<TodoItem>()), Times.Never);
     }
@@ -124,9 +146,14 @@ public class UpdateTodoCommandHandlerTests
             DueDate: new DateOnly(2026, 2, 11));
 
         var todoItem = CreateTodoItem(todoId);
+        var userId = Guid.NewGuid();
+
+        _currentUserServiceMock
+            .SetupGet(c => c.UserId)
+            .Returns(userId);
 
         _todoRepositoryMock
-            .Setup(r => r.GetByIdAsync(todoId, It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetByIdForOwnerAsync(todoId, userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(todoItem);
 
         // Act
@@ -153,7 +180,8 @@ public class UpdateTodoCommandHandlerTests
 
     private static TodoItem CreateTodoItem(Guid id)
     {
-        var item = new TodoItem("Old title", "Old notes", new DateOnly(2026, 2, 10));
+        var userId = Guid.NewGuid();
+        var item = new TodoItem(userId, "Old title", "Old notes", new DateOnly(2026, 2, 10));
         typeof(TodoItem).GetProperty("Id")!.SetValue(item, id);
         return item;
     }

@@ -11,6 +11,9 @@ public sealed class TodoItemConfiguration : IEntityTypeConfiguration<TodoItem>
         builder.ToTable("Todos");
 
         builder.HasKey(x => x.Id);
+        
+        builder.Property<Guid>("OwnerId")
+            .IsRequired();
 
         // ValueConverter: TodoTitle <-> string
         builder.Property(x => x.Title)

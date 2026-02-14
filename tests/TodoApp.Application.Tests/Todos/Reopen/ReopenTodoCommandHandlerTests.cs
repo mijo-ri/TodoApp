@@ -2,6 +2,7 @@ using FluentAssertions;
 using MapsterMapper;
 using Moq;
 using TodoApp.Application.Abstractions.Persistence;
+using TodoApp.Application.Abstractions.Security;
 using TodoApp.Application.Todos;
 using TodoApp.Application.Todos.Reopen;
 using TodoApp.Domain.Todos;
@@ -12,16 +13,19 @@ public class ReopenTodoCommandHandlerTests
 {
     private readonly Mock<ITodoRepository> _todoRepositoryMock;
     private readonly Mock<IMapper> _mapperMock;
+    private readonly Mock<ICurrentUserService> _currentUserServiceMock;
     private readonly ReopenTodoCommandHandler _sut;
 
     public ReopenTodoCommandHandlerTests()
     {
         _todoRepositoryMock = new Mock<ITodoRepository>(MockBehavior.Strict);
         _mapperMock = new Mock<IMapper>(MockBehavior.Strict);
+        _currentUserServiceMock = new Mock<ICurrentUserService>(MockBehavior.Strict);
 
         _sut = new ReopenTodoCommandHandler(
             _todoRepositoryMock.Object,
-            _mapperMock.Object);
+            _mapperMock.Object,
+            _currentUserServiceMock.Object);
     }
 
     [Fact]
@@ -30,10 +34,15 @@ public class ReopenTodoCommandHandlerTests
         // Arrange
         var todo = CreateCompletedTodoItem();
         var command = new ReopenTodoCommand(todo.Id);
+        var userId = Guid.NewGuid();
         var expectedDto = CreateDtoFrom(todo);
 
+        _currentUserServiceMock
+            .SetupGet(c => c.UserId)
+            .Returns(userId);
+
         _todoRepositoryMock
-            .Setup(r => r.GetByIdAsync(todo.Id, It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetByIdForOwnerAsync(todo.Id, userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(todo);
 
         _todoRepositoryMock
@@ -51,7 +60,8 @@ public class ReopenTodoCommandHandlerTests
         result.IsError.Should().BeFalse();
         result.Value.Should().Be(expectedDto);
 
-        _todoRepositoryMock.Verify(r => r.GetByIdAsync(todo.Id, It.IsAny<CancellationToken>()), Times.Once);
+        _currentUserServiceMock.VerifyGet(c => c.UserId, Times.Once);
+        _todoRepositoryMock.Verify(r => r.GetByIdForOwnerAsync(todo.Id, userId, It.IsAny<CancellationToken>()), Times.Once);
         _todoRepositoryMock.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         _mapperMock.Verify(m => m.Map<TodoDto>(todo), Times.Once);
     }
@@ -62,9 +72,14 @@ public class ReopenTodoCommandHandlerTests
         // Arrange
         var id = Guid.NewGuid();
         var command = new ReopenTodoCommand(id);
+        var userId = Guid.NewGuid();
+
+        _currentUserServiceMock
+            .SetupGet(c => c.UserId)
+            .Returns(userId);
 
         _todoRepositoryMock
-            .Setup(r => r.GetByIdAsync(id, It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetByIdForOwnerAsync(id, userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((TodoItem?)null);
 
         // Act
@@ -73,7 +88,8 @@ public class ReopenTodoCommandHandlerTests
         // Assert
         result.IsError.Should().BeTrue();
 
-        _todoRepositoryMock.Verify(r => r.GetByIdAsync(id, It.IsAny<CancellationToken>()), Times.Once);
+        _currentUserServiceMock.VerifyGet(c => c.UserId, Times.Once);
+        _todoRepositoryMock.Verify(r => r.GetByIdForOwnerAsync(id, userId, It.IsAny<CancellationToken>()), Times.Once);
         _todoRepositoryMock.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
         _mapperMock.Verify(m => m.Map<TodoDto>(It.IsAny<TodoItem>()), Times.Never);
     }
@@ -84,10 +100,15 @@ public class ReopenTodoCommandHandlerTests
         // Arrange
         var todo = CreateCompletedTodoItem();
         var command = new ReopenTodoCommand(todo.Id);
+        var userId = Guid.NewGuid();
         var token = new CancellationTokenSource().Token;
 
+        _currentUserServiceMock
+            .SetupGet(c => c.UserId)
+            .Returns(userId);
+
         _todoRepositoryMock
-            .Setup(r => r.GetByIdAsync(todo.Id, token))
+            .Setup(r => r.GetByIdForOwnerAsync(todo.Id, userId, token))
             .ReturnsAsync(todo);
 
         _todoRepositoryMock
@@ -102,13 +123,15 @@ public class ReopenTodoCommandHandlerTests
         await _sut.Handle(command, token);
 
         // Assert
-        _todoRepositoryMock.Verify(r => r.GetByIdAsync(todo.Id, token), Times.Once);
+        _currentUserServiceMock.VerifyGet(c => c.UserId, Times.Once);
+        _todoRepositoryMock.Verify(r => r.GetByIdForOwnerAsync(todo.Id, userId, token), Times.Once);
         _todoRepositoryMock.Verify(r => r.SaveChangesAsync(token), Times.Once);
     }
 
     private static TodoItem CreateCompletedTodoItem()
     {
-        var item = new TodoItem("Completed Task", "Notes", new DateOnly(2026, 2, 10));
+        var userId = Guid.NewGuid();
+        var item = new TodoItem(userId, "Completed Task", "Notes", new DateOnly(2026, 2, 10));
         item.Complete(DateTimeOffset.UtcNow);
         return item;
     }

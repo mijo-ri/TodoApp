@@ -3,6 +3,7 @@
 public sealed class TodoItem
 {
     public Guid Id { get; private set; } = Guid.NewGuid();
+    public Guid OwnerId { get; private set; }
 
     public TodoTitle Title { get; private set; } = default!;
     public string? Notes { get; private set; }
@@ -14,8 +15,13 @@ public sealed class TodoItem
     // needed by EF Core (private parameterless ctor)
     private TodoItem() { }
 
-    public TodoItem(string title, string? notes = null, DateOnly? dueDate = null)
+    public TodoItem(
+        Guid userId,
+        string title,
+        string? notes = null,
+        DateOnly? dueDate = null)
     {
+        SetOwnerId(userId);
         SetTitle(title);
         SetNotes(notes);
         SetDueDate(dueDate);
@@ -49,6 +55,14 @@ public sealed class TodoItem
         CompletedAt = null;
     }
 
+    private void SetOwnerId(Guid userId)
+    {
+        if (userId == Guid.Empty)
+            throw new DomainException("OwnerId must not be empty.");
+        
+        OwnerId = userId;
+    }
+    
     private void SetTitle(string title)
     {
         Title = TodoTitle.Create(title);

@@ -9,14 +9,16 @@ public class TodoItemTests
     public void Constructor_ShouldSetProperties_WhenValidArguments()
     {
         // Arrange
+        var userId = Guid.NewGuid();
         var title = "Buy milk";
         var notes = "Remember to buy low fat";
         var dueDate = new DateOnly(2026, 2, 10);
 
         // Act
-        var item = new TodoItem(title, notes, dueDate);
+        var item = new TodoItem(userId, title, notes, dueDate);
 
         // Assert
+        item.OwnerId.Should().Be(userId);
         item.Title.Value.Should().Be(title);
         item.Notes.Should().Be(notes);
         item.DueDate.Should().Be(dueDate);
@@ -29,8 +31,8 @@ public class TodoItemTests
     public void Constructor_ShouldTrimNotes_AndSetNull_WhenWhitespaceOrNull()
     {
         // Act
-        var item1 = new TodoItem("Title", "   ");
-        var item2 = new TodoItem("Title", null);
+        var item1 = new TodoItem(Guid.NewGuid(), "Title", "   ");
+        var item2 = new TodoItem(Guid.NewGuid(), "Title", null);
 
         // Assert
         item1.Notes.Should().BeNull();
@@ -44,7 +46,7 @@ public class TodoItemTests
         var notes = new string('a', 2001);
 
         // Act
-        var act = () => new TodoItem("Title", notes);
+        var act = () => new TodoItem(Guid.NewGuid(), "Title", notes);
 
         // Assert
         act.Should()
@@ -56,7 +58,7 @@ public class TodoItemTests
     public void Update_ShouldChangeTitleNotesAndDueDate_WhenNotCompleted()
     {
         // Arrange
-        var item = new TodoItem("Old", "Old notes", new DateOnly(2026, 2, 8));
+        var item = new TodoItem(Guid.NewGuid(), "Old", "Old notes", new DateOnly(2026, 2, 8));
 
         // Act
         item.Update("New", "New notes", new DateOnly(2026, 2, 9));
@@ -71,7 +73,7 @@ public class TodoItemTests
     public void Update_ShouldThrowDomainException_WhenCompleted()
     {
         // Arrange
-        var item = new TodoItem("Title");
+        var item = new TodoItem(Guid.NewGuid(), "Title");
         item.Complete(DateTimeOffset.UtcNow);
 
         // Act
@@ -87,7 +89,7 @@ public class TodoItemTests
     public void Update_ShouldThrowDomainException_WhenNotesExceedMaxLength()
     {
         // Arrange
-        var item = new TodoItem("Title");
+        var item = new TodoItem(Guid.NewGuid(), "Title");
         var notes = new string('a', 2001);
 
         // Act
@@ -103,7 +105,7 @@ public class TodoItemTests
     public void Complete_ShouldSetIsCompletedAndCompletedAt_WhenNotAlreadyCompleted()
     {
         // Arrange
-        var item = new TodoItem("Title");
+        var item = new TodoItem(Guid.NewGuid(), "Title");
         var now = DateTimeOffset.UtcNow;
 
         // Act
@@ -118,7 +120,7 @@ public class TodoItemTests
     public void Complete_ShouldDoNothing_WhenAlreadyCompleted()
     {
         // Arrange
-        var item = new TodoItem("Title");
+        var item = new TodoItem(Guid.NewGuid(), "Title");
         var first = DateTimeOffset.UtcNow;
         item.Complete(first);
 
@@ -135,7 +137,7 @@ public class TodoItemTests
     public void Reopen_ShouldSetIsCompletedFalseAndClearCompletedAt_WhenCompleted()
     {
         // Arrange
-        var item = new TodoItem("Title");
+        var item = new TodoItem(Guid.NewGuid(), "Title");
         var now = DateTimeOffset.UtcNow;
         item.Complete(now);
 
@@ -151,7 +153,7 @@ public class TodoItemTests
     public void Reopen_ShouldDoNothing_WhenNotCompleted()
     {
         // Arrange
-        var item = new TodoItem("Title");
+        var item = new TodoItem(Guid.NewGuid(), "Title");
 
         // Act
         item.Reopen();

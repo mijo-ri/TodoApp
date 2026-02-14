@@ -7,7 +7,11 @@ meta {
 post {
   url: {{host}}/api/todos/{{id}}/complete
   body: none
-  auth: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
 }
 
 body:json {

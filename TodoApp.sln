@@ -21,23 +21,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "bruno", "bruno", "{D79209F0-CD63-4419-ABF5-95F812FDAB6B}"
-	ProjectSection(SolutionItems) = preProject
-		bruno\Complete Todo.bru = bruno\Complete Todo.bru
-		bruno\Create Todo with validation errors.bru = bruno\Create Todo with validation errors.bru
-		bruno\Create Todo.bru = bruno\Create Todo.bru
-		bruno\Delete Todo.bru = bruno\Delete Todo.bru
-		bruno\Get Todo by id.bru = bruno\Get Todo by id.bru
-		bruno\List Todos.bru = bruno\List Todos.bru
-		bruno\Reopen Todo.bru = bruno\Reopen Todo.bru
-		bruno\Update Todo.bru = bruno\Update Todo.bru
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "environments", "environments", "{8E831CF5-AA3F-4E43-8E5A-1D3D6A3069EA}"
-	ProjectSection(SolutionItems) = preProject
-		bruno\environments\development.bru = bruno\environments\development.bru
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TodoApp.Domain.Tests", "tests\TodoApp.Domain.Tests\TodoApp.Domain.Tests.csproj", "{BC2893B8-522F-43A7-A575-717AA2EAEE0F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TodoApp.Application.Tests", "tests\TodoApp.Application.Tests\TodoApp.Application.Tests.csproj", "{B5FF6E66-9C29-4889-9821-38A0DCA84C22}"

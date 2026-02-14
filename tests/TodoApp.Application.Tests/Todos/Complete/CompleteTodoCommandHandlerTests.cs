@@ -3,6 +3,7 @@ using MapsterMapper;
 using Moq;
 using TodoApp.Application.Abstractions.Persistence;
 using TodoApp.Application.Abstractions.Time;
+using TodoApp.Application.Abstractions.Security;
 using TodoApp.Application.Todos;
 using TodoApp.Application.Todos.Complete;
 using TodoApp.Domain.Todos;
@@ -14,6 +15,7 @@ public class CompleteTodoCommandHandlerTests
     private readonly Mock<ITodoRepository> _todoRepositoryMock;
     private readonly Mock<IMapper> _mapperMock;
     private readonly Mock<IClock> _clockMock;
+    private readonly Mock<ICurrentUserService> _currentUserServiceMock;
     private readonly CompleteTodoCommandHandler _sut;
 
     public CompleteTodoCommandHandlerTests()
@@ -21,11 +23,13 @@ public class CompleteTodoCommandHandlerTests
         _todoRepositoryMock = new Mock<ITodoRepository>(MockBehavior.Strict);
         _mapperMock = new Mock<IMapper>(MockBehavior.Strict);
         _clockMock = new Mock<IClock>(MockBehavior.Strict);
+        _currentUserServiceMock = new Mock<ICurrentUserService>(MockBehavior.Strict);
 
         _sut = new CompleteTodoCommandHandler(
             _todoRepositoryMock.Object,
             _mapperMock.Object,
-            _clockMock.Object);
+            _clockMock.Object,
+            _currentUserServiceMock.Object);
     }
 
     [Fact]
@@ -33,9 +37,14 @@ public class CompleteTodoCommandHandlerTests
     {
         // Arrange
         var command = CreateValidCommand();
+        var userId = Guid.NewGuid();
+
+        _currentUserServiceMock
+            .SetupGet(c => c.UserId)
+            .Returns(userId);
 
         _todoRepositoryMock
-            .Setup(r => r.GetByIdAsync(command.Id, It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetByIdForOwnerAsync(command.Id, userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((TodoItem?)null);
 
         // Act
@@ -44,7 +53,8 @@ public class CompleteTodoCommandHandlerTests
         // Assert
         result.IsError.Should().BeTrue();
 
-        _todoRepositoryMock.Verify(r => r.GetByIdAsync(command.Id, It.IsAny<CancellationToken>()), Times.Once);
+        _currentUserServiceMock.VerifyGet(c => c.UserId, Times.Once);
+        _todoRepositoryMock.Verify(r => r.GetByIdForOwnerAsync(command.Id, userId, It.IsAny<CancellationToken>()), Times.Once);
         _todoRepositoryMock.VerifyNoOtherCalls();
         _mapperMock.VerifyNoOtherCalls();
         _clockMock.VerifyNoOtherCalls();
@@ -57,10 +67,15 @@ public class CompleteTodoCommandHandlerTests
         var command = CreateValidCommand();
         var todo = CreateTodoItem(command.Id, "Test");
         var now = DateTimeOffset.UtcNow;
+        var userId = Guid.NewGuid();
         var expectedDto = CreateDtoFrom(todo, now);
 
+        _currentUserServiceMock
+            .SetupGet(c => c.UserId)
+            .Returns(userId);
+
         _todoRepositoryMock
-            .Setup(r => r.GetByIdAsync(command.Id, It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetByIdForOwnerAsync(command.Id, userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(todo);
 
         _clockMock
@@ -82,7 +97,8 @@ public class CompleteTodoCommandHandlerTests
         result.IsError.Should().BeFalse();
         result.Value.Should().Be(expectedDto);
 
-        _todoRepositoryMock.Verify(r => r.GetByIdAsync(command.Id, It.IsAny<CancellationToken>()), Times.Once);
+        _currentUserServiceMock.VerifyGet(c => c.UserId, Times.Once);
+        _todoRepositoryMock.Verify(r => r.GetByIdForOwnerAsync(command.Id, userId, It.IsAny<CancellationToken>()), Times.Once);
         _clockMock.Verify(c => c.UtcNow, Times.Once);
         _todoRepositoryMock.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         _mapperMock.Verify(m => m.Map<TodoDto>(todo), Times.Once);
@@ -95,10 +111,15 @@ public class CompleteTodoCommandHandlerTests
         var command = CreateValidCommand();
         var todo = CreateTodoItem(command.Id, "Test");
         var now = DateTimeOffset.UtcNow;
+        var userId = Guid.NewGuid();
         var token = new CancellationTokenSource().Token;
 
+        _currentUserServiceMock
+            .SetupGet(c => c.UserId)
+            .Returns(userId);
+
         _todoRepositoryMock
-            .Setup(r => r.GetByIdAsync(command.Id, token))
+            .Setup(r => r.GetByIdForOwnerAsync(command.Id, userId, token))
             .ReturnsAsync(todo);
 
         _clockMock
@@ -117,7 +138,8 @@ public class CompleteTodoCommandHandlerTests
         await _sut.Handle(command, token);
 
         // Assert
-        _todoRepositoryMock.Verify(r => r.GetByIdAsync(command.Id, token), Times.Once);
+        _currentUserServiceMock.VerifyGet(c => c.UserId, Times.Once);
+        _todoRepositoryMock.Verify(r => r.GetByIdForOwnerAsync(command.Id, userId, token), Times.Once);
         _todoRepositoryMock.Verify(r => r.SaveChangesAsync(token), Times.Once);
     }
 
@@ -128,7 +150,8 @@ public class CompleteTodoCommandHandlerTests
 
     private static TodoItem CreateTodoItem(Guid id, string title)
     {
-        var todo = new TodoItem(title);
+        var userId = Guid.NewGuid();
+        var todo = new TodoItem(userId, title);
         typeof(TodoItem).GetProperty("Id")!.SetValue(todo, id);
         return todo;
     }

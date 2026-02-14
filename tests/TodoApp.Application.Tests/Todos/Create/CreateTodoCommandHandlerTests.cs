@@ -2,6 +2,7 @@
 using MapsterMapper;
 using Moq;
 using TodoApp.Application.Abstractions.Persistence;
+using TodoApp.Application.Abstractions.Security;
 using TodoApp.Application.Todos;
 using TodoApp.Application.Todos.Create;
 using TodoApp.Domain.Todos;
@@ -12,12 +13,19 @@ public class CreateTodoCommandHandlerTests
 {
     private readonly Mock<ITodoRepository> _todoRepositoryMock;
     private readonly Mock<IMapper> _mapperMock;
+    private readonly Mock<ICurrentUserService> _currentUserServiceMock;
     private readonly CreateTodoCommandHandler _sut;
 
     public CreateTodoCommandHandlerTests()
     {
         _todoRepositoryMock = new Mock<ITodoRepository>(MockBehavior.Strict);
         _mapperMock = new Mock<IMapper>(MockBehavior.Strict);
+        _currentUserServiceMock = new Mock<ICurrentUserService>(MockBehavior.Strict);
+
+        var userId = Guid.NewGuid();
+        _currentUserServiceMock
+            .Setup(s => s.UserId)
+            .Returns(userId);
 
         _todoRepositoryMock
             .Setup(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()))
@@ -25,7 +33,8 @@ public class CreateTodoCommandHandlerTests
 
         _sut = new CreateTodoCommandHandler(
             _todoRepositoryMock.Object,
-            _mapperMock.Object);
+            _mapperMock.Object,
+            _currentUserServiceMock.Object);
     }
 
     [Fact]

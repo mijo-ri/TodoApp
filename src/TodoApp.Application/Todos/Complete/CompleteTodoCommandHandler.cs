@@ -3,6 +3,7 @@ using MapsterMapper;
 using MediatR;
 using TodoApp.Application.Abstractions.Persistence;
 using TodoApp.Application.Abstractions.Time;
+using TodoApp.Application.Abstractions.Security;
 using TodoApp.Application.Common.Errors;
 
 namespace TodoApp.Application.Todos.Complete;
@@ -13,22 +14,31 @@ public class CompleteTodoCommandHandler
     private readonly ITodoRepository _todoRepository;
     private readonly IMapper _mapper;
     private readonly IClock _clock;
+    private readonly ICurrentUserService _currentUserService;
 
     public CompleteTodoCommandHandler(
         ITodoRepository todoRepository,
         IMapper mapper,
-        IClock clock)
+        IClock clock,
+        ICurrentUserService currentUserService)
     {
         _todoRepository = todoRepository;
         _mapper = mapper;
         _clock = clock;
+        _currentUserService = currentUserService;
     }
 
     public async Task<ErrorOr<TodoDto>> Handle(
         CompleteTodoCommand request,
         CancellationToken cancellationToken)
     {
-        var todo = await _todoRepository.GetByIdAsync(request.Id, cancellationToken);
+        var userId = _currentUserService.UserId;
+        if (userId is null)
+        {
+            return UserErrors.Unauthorized();
+        }
+
+        var todo = await _todoRepository.GetByIdForOwnerAsync(request.Id, userId.Value, cancellationToken);
         if (todo is null)
         {
             return TodoErrors.NotFound(request.Id);

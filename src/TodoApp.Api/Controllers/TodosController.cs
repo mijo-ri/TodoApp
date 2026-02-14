@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TodoApp.Api.Contracts;
 using TodoApp.Api.Errors;
@@ -14,6 +15,7 @@ using TodoApp.Application.Todos.Update;
 namespace TodoApp.Api.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/[controller]")]
 public sealed class TodosController : ControllerBase
 {

@@ -7,12 +7,16 @@ meta {
 post {
   url: {{host}}/api/todos
   body: json
-  auth: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
 }
 
 body:json {
   {
-    "title": "My todo",
+    "title": "My todo auth to delete",
     "notes": "Notes about my todo item",
     "dueDate": "2026-04-21"
   }

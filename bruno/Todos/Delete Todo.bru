@@ -1,0 +1,15 @@
+meta {
+  name: Delete Todo
+  type: http
+  seq: 8
+}
+
+delete {
+  url: {{host}}/api/todos/7d7a2058-956c-4607-a96e-ba63e70ec439
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}

@@ -2,6 +2,7 @@
 using MapsterMapper;
 using MediatR;
 using TodoApp.Application.Abstractions.Persistence;
+using TodoApp.Application.Abstractions.Security;
 using TodoApp.Application.Common.Errors;
 using TodoApp.Domain;
 using TodoApp.Domain.Todos;
@@ -13,24 +14,33 @@ public sealed class CreateTodoCommandHandler
 {
     private readonly ITodoRepository _todoRepository;
     private readonly IMapper _mapper;
+    private readonly ICurrentUserService _currentUserService;
 
     public CreateTodoCommandHandler(
         ITodoRepository todoRepository,
-        IMapper mapper)
+        IMapper mapper,
+        ICurrentUserService currentUserService)
     {
         _todoRepository = todoRepository;
         _mapper = mapper;
+        _currentUserService = currentUserService;
     }
 
     public async Task<ErrorOr<TodoDto>> Handle(
         CreateTodoCommand request,
         CancellationToken cancellationToken)
     {
+        if (!_currentUserService.UserId.HasValue)
+        {
+            return UserErrors.Unauthorized();
+        }
+        
         TodoItem todo;
 
         try
         {
             todo = new TodoItem(
+                _currentUserService.UserId.Value,
                 request.Title,
                 request.Notes,
                 request.DueDate);

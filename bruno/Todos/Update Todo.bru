@@ -1,13 +1,17 @@
 meta {
-  name: Reopen Todo
+  name: Update Todo
   type: http
-  seq: 7
+  seq: 5
 }
 
-post {
-  url: {{host}}/api/todos/{{id}}/reopen
-  body: none
-  auth: none
+put {
+  url: {{host}}/api/todos/{{id}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
 }
 
 body:json {

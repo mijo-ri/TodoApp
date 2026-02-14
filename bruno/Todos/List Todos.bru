@@ -7,9 +7,13 @@ meta {
 get {
   url: {{host}}/api/todos
   body: none
-  auth: none
+  auth: bearer
 }
 
 params:query {
   ~isCompleted: true
+}
+
+auth:bearer {
+  token: {{accessToken}}
 }

@@ -18,11 +18,24 @@ public sealed class EfTodoRepository : ITodoRepository
         return _db.Todos.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 
+    public Task<TodoItem?> GetByIdForOwnerAsync(
+        Guid id,
+        Guid ownerId,
+        CancellationToken cancellationToken)
+    {
+        return _db.Todos.FirstOrDefaultAsync(
+            x => x.Id == id && x.OwnerId == ownerId,
+            cancellationToken);
+    }
+
     public Task<List<TodoItem>> ListAsync(
+        Guid ownerId,
         bool? isCompleted,
         CancellationToken cancellationToken)
     {
-        var query = _db.Todos.AsQueryable();
+        var query = _db.Todos
+            .Where(x => x.OwnerId == ownerId)
+            .AsQueryable();
 
         if (isCompleted.HasValue)
             query = query.Where(x => x.IsCompleted == isCompleted.Value);
