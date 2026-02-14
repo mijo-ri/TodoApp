@@ -410,8 +410,6 @@ This makes tests more explicit and safer during refactoring.
 🚧 In development
 
 Next steps:
-- Check if ownerId validation is correctly implemented
-- Change all use cases so ownerId is used
 - Create tests for Users and RefreshTokens
 - Polish logging and `ProblemDetails` handling, including explicit Swagger response types
 - Introduce paging and filtering for list endpoints, including efficient EF Core projections
