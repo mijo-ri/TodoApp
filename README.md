@@ -8,6 +8,24 @@ and separation of concerns.
 
 ---
 
+## Quickstart (local)
+
+```sh
+dotnet restore
+
+dotnet run --project src/TodoApp.Api
+```
+
+Swagger:
+
+```
+https://localhost:{port}/swagger
+```
+
+Note: most `/api/todos` endpoints are protected and require a JWT access token (see **Authentication & Authorization** below).
+
+---
+
 ## Architecture Overview
 
 The project follows **Clean Architecture** principles:
@@ -297,22 +315,38 @@ https://localhost:{port}/swagger
 
 The API uses **JWT Bearer authentication**.
 
-Auth endpoints:
-- `POST /api/auth/register` \- Create a new user (unique email).
-- `POST /api/auth/login` \- Returns an **access token** (JWT) and a **refresh token**.
-- `POST /api/auth/refresh` \- Rotates the refresh token and returns a new token pair.
-- `POST /api/auth/logout` \- Revokes the given refresh token.
+- **Authentication**: you obtain an **access token** (JWT) via login.
+- **Authorization**: Todo endpoints require an authenticated user (i.e., a valid access token).
 
-Using protected endpoints (e.g. `GET /api/todos`) requires:
+Auth endpoints (public):
+- `POST /api/auth/register` - Create a new user (unique email).
+- `POST /api/auth/login` - Returns an **access token** (JWT) and a **refresh token**.
+- `POST /api/auth/refresh` - Rotates the refresh token and returns a new token pair.
+- `POST /api/auth/logout` - Revokes the given refresh token.
 
-`Authorization: Bearer <accessToken>`
-
-When the access token expires, call `POST /api/auth/refresh` with the refresh token to obtain a new token pair.
-
-Example endpoints:
+Protected endpoints (require `Authorization: Bearer <accessToken>`):
 - `POST /api/todos`
 - `GET /api/todos`
 - `GET /api/todos/{id}`
+
+Minimal flow:
+1. Register (once) or login
+2. Call protected endpoints using the access token
+3. When the access token expires, call `POST /api/auth/refresh` with the refresh token to obtain a new token pair
+
+Example header:
+
+```
+Authorization: Bearer <accessToken>
+```
+
+Troubleshooting:
+- **401** = missing/invalid/expired token
+- **403** = authenticated, but not allowed (e.g., future policies/roles)
+
+### Trying the API with Bruno
+
+This repository includes ready-to-use Bruno requests under `bruno/` (Auth + Todos). Run login first, then call Todos.
 
 ---
 
