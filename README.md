@@ -293,6 +293,22 @@ After starting the API in development mode, open Swagger:
 https://localhost:{port}/swagger
 ```
 
+### Authentication & Authorization
+
+The API uses **JWT Bearer authentication**.
+
+Auth endpoints:
+- `POST /api/auth/register` \- Create a new user (unique email).
+- `POST /api/auth/login` \- Returns an **access token** (JWT) and a **refresh token**.
+- `POST /api/auth/refresh` \- Rotates the refresh token and returns a new token pair.
+- `POST /api/auth/logout` \- Revokes the given refresh token.
+
+Using protected endpoints (e.g. `GET /api/todos`) requires:
+
+`Authorization: Bearer <accessToken>`
+
+When the access token expires, call `POST /api/auth/refresh` with the refresh token to obtain a new token pair.
+
 Example endpoints:
 - `POST /api/todos`
 - `GET /api/todos`
